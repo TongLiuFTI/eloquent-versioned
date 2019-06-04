@@ -50,29 +50,25 @@ class VersioningScope implements ScopeInterface {
 		}
 	}
 
-	/**
-	 * @param Builder $builder
-	 */
-	protected function addWithOldVersions( Builder $builder ) {
-		$builder->macro( 'withOldVersions', function ( Builder $builder ) {
-			$this->remove( $builder, $builder->getModel() );
-
-			return $builder;
-		} );
-	}
-
-	/**
-	 * @param Builder $builder
-	 */
-	protected function addOnlyOldVersions( Builder $builder ) {
-		$builder->macro( 'onlyOldVersions', function ( Builder $builder ) {
-			$model = $builder->getModel();
-			$this->remove( $builder, $model );
-
-			$builder->getQuery()->where( $model->getQualifiedIsCurrentVersionColumn(), 0 );
-
-			return $builder;
-		} );
-	}
+    /**
+     * @param Builder $builder
+     */
+    protected function addWithOldVersions(Builder $builder)
+    {
+        $builder->macro('withOldVersions', function (Builder $builder) {
+            return $builder->withoutGlobalScope($this);
+        });
+    }
+    /**
+     * @param Builder $builder
+     */
+    protected function addOnlyOldVersions(Builder $builder)
+    {
+        $builder->macro('onlyOldVersions', function (Builder $builder) {
+            $model = $builder->getModel();
+            $builder->withoutGlobalScope($this)->where($model->getQualifiedIsCurrentVersionColumn(),0);
+            return $builder;
+        });
+    }
 
 }
